@@ -1,0 +1,10 @@
+# Pfyfile.pf — example with includes and a local task
+include "base.pf"
+include web.pf
+
+task db
+  describe Install PostgreSQL and start service
+  packages install postgresql
+  service enable postgresql
+  service start postgresql
+end

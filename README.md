@@ -1,62 +1,67 @@
-# ff — tiny Fabric runner (symbol-free DSL)
+# pf — tiny Fabric runner (symbol-free DSL)
 
-This is a single-file **Fabric** runner that keeps the tiny DSL we built for pyinfra, but executes
-directly over SSH with streaming output and fewer CLI quirks.
+Single-file **Fabric** runner with a tiny, readable DSL, parallel SSH, and live output.
 
-- One file: `ff.py` (CLI + DSL runtime)
+- One file: `pf.py`
 - Symbol-free DSL: `shell`, `packages install/remove`, `service start/stop/enable/disable/restart`, `directory`, `copy`
-- Task metadata: `describe` shows up in `ff list`
+- Task metadata: `describe` shows in `pf list`
 - Project split: `include` other `.pf` files from `Pfyfile.pf`
+- Per-task params: `pf run-tls tls_cert=... port=9443` → use `$tls_cert`, `$port` in DSL
+- **Per-task env**: line `env KEY=VAL KEY2=VAL2` applies to the rest of the task
 - Host args: `env=prod`, `hosts=user@ip:port,...`, repeatable `host=...`
-- Parallel SSH across hosts, with prefixed live output
 
 ## Install
 
 ```bash
 pip install "fabric>=3.2,<4"
+chmod +x pf.py
 ```
 
 ## Quickstart
 
 ```bash
-chmod +x ff.py
-
-./ff.py list
-./ff.py env=prod update
-./ff.py hosts=ubuntu@10.0.0.5:22,punk@10.4.4.4:24 bootstrap
-./ff.py host=ubuntu@10.0.0.5:22 host=punk@10.4.4.4:24 web
+pf list
+pf env=prod update
+pf hosts=ubuntu@10.0.0.5:22,punk@10.4.4.4:24 run-tls tls_cert=$PWD/certs/server.crt tls_key=$PWD/certs/server.key port=9443
 ```
 
 ## DSL
 
 ```text
-task web
-  describe Install & start nginx
-  packages install nginx
-  copy ./nginx.conf /etc/nginx/nginx.conf mode=0644
-  service enable nginx
-  service start nginx
+task run-tls
+  describe Start packetfs-infinity with Hypercorn TLS
+  env tls_cert=$PWD/certs/server.crt tls_key=$PWD/certs/server.key port=9443
+  shell podman run --rm \
+       -p $port:9443 \
+       -v $tls_cert:/certs/server.crt:ro \
+       -v $tls_key:/certs/server.key:ro \
+       packetfs/pfs-infinity:latest
 end
 ```
 
-Verbs:
-- `shell <command...>` (respects `sudo=true` / `sudo_user=...`)
-- `packages install <name...>` / `packages remove <name...>` (apt-based)
-- `service start|stop|enable|disable|restart <name>`
-- `directory <path> [mode=0755]`
-- `copy <local> <remote> [mode=0644] [user=...] [group=...]`
-- `describe <one line>` (inside task; for `list`)
-- Top-level: `include path.pf` (outside tasks)
+- `$VAR` / `${VAR}` are interpolated from (in order): **task params** → **task env** → **process env**.
+- On remote hosts: `env` is translated to `export VAR=...;` before each command.
+- Locally: variables are provided via the process environment.
 
-## Hosts & Environments
+## Includes
 
-```bash
-./ff.py env=prod update
-./ff.py hosts=ubuntu@10.0.0.5:22,punk@10.4.4.4:24 web
-./ff.py host=ubuntu@10.0.0.5:22 host=punk@10.4.4.4:24 sudo=true upgrade
+Top-level in `Pfyfile.pf`:
+
+```text
+include "base.pf"
+include web.pf
 ```
 
-Define env aliases in the script (`ENV_MAP`):
+## Environments & Hosts
+
+```bash
+pf env=prod update
+pf env=prod env=staging run
+pf hosts=ubuntu@10.0.0.5:22,punk@10.4.4.4:24 down
+pf host=ubuntu@10.0.0.5:22 sudo=true upgrade
+```
+
+Define env aliases in `ENV_MAP` at the top of `pf.py`:
 
 ```python
 ENV_MAP = {
@@ -68,24 +73,6 @@ ENV_MAP = {
 
 ## Notes
 
-- Uses your SSH agent/keys. You can also rely on `~/.ssh/config` for host/user/port defaults.
-- `sudo=true` runs commands under `sudo`. `sudo_user=alice` uses `sudo -u alice`.
-- Parallelism is limited to min(32, number of hosts). Adjust easily in the code.
-- The `packages` verb assumes **apt**; you can extend for `dnf`, `pacman`, etc.
-- Local runs use `/bin/sh -c` via Python's subprocess when target is `@local`.
-
-## Sample Pfyfile.pf
-
-```text
-include "base.pf"
-include web.pf
-
-task db
-  describe Install PostgreSQL and start service
-  packages install postgresql
-  service enable postgresql
-  service start postgresql
-end
-```
-
-Have fun!
+- Uses your SSH agent/keys and `~/.ssh/config` if present
+- `packages` assumes **apt**; easy to extend to `dnf`, `pacman`, etc.
+- Parallelism: min(32, number of hosts). Tweak in code.
