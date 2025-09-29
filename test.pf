@@ -1,0 +1,10 @@
+task test_echo
+  describe Test parameter and variable interpolation
+  env TEST_VAR=defaultvalue
+  shell echo "Hello from test task! param=$test_param env=$TEST_VAR"
+end
+
+task test_params
+  describe Test parameter passing
+  shell echo "Received param1=${param1} and param2=${param2}"
+end
