@@ -405,20 +405,28 @@ def main(argv: List[str]) -> int:
     valid_task_names = set(BUILTINS.keys()) | set(dsl_tasks.keys()) | {"list", "help", "--help"}
 
     # Parse multi-task + params: <task> [k=v ...] <task2> [k=v ...] ...
-    selected = []
-    j = 0
-    while j < len(tasks):
-        tname = tasks[j]
-        if tname not in valid_task_names:
-            print(f"[error] no such task: {tname}", file=sys.stderr); return 1
+selected = []
+j = 0
+all_names_for_alias = list(BUILTINS.keys()) + list(dsl_tasks.keys()) + ["list","help","--help"]
+aliasmap_all = _alias_map(all_names_for_alias)
+while j < len(tasks):
+    tname = tasks[j]
+    if tname not in valid_task_names:
+        if tname in aliasmap_all:
+            tname = aliasmap_all[tname]
+        else:
+            import difflib as _difflib
+            close = _difflib.get_close_matches(tname, list(valid_task_names), n=3, cutoff=0.5)
+            print(f"[error] no such task: {tname}" + (f" — did you mean: {', '.join(close)}?" if close else ""), file=sys.stderr); 
+            return 1
+    j += 1
+    params = {}
+    while j < len(tasks) and ("=" in tasks[j]) and (not tasks[j].startswith("--")):
+        k, v = tasks[j].split("=", 1)
+        params[k] = v
         j += 1
-        params = {}
-        while j < len(tasks) and ("=" in tasks[j]) and (not tasks[j].startswith("--")):
-            k, v = tasks[j].split("=", 1)
-            params[k] = v
-            j += 1
-        lines = BUILTINS.get(tname, dsl_tasks[tname].lines)
-        selected.append((tname, lines, params))
+    lines = BUILTINS.get(tname, dsl_tasks[tname].lines)
+    selected.append((tname, lines, params))
 
     # Execute in parallel across hosts
     def run_host(hspec: str):
