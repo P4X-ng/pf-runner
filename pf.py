@@ -318,19 +318,19 @@ def _exec_line_fabric(c: Optional[Connection], line: str, sudo: bool, sudo_user:
 
 # ---------- Built-ins ----------
 BUILTINS: Dict[str, List[str]] = {
-    "update": ["shell sudo apt -y update"],
-    "upgrade": ["shell sudo apt -y upgrade"],
+    "update": ["shell ./scripts/system-setup.sh update"],
+    "upgrade": ["shell ./scripts/system-setup.sh upgrade"],
+    "install-base": ["shell ./scripts/system-setup.sh install-base"],
+    "setup-venv": ["shell ./scripts/system-setup.sh setup-venv"],
     "reboot": ["shell sudo shutdown -r +1 'pf reboot requested'"],
-    "docker_install": [
-        "shell sudo apt -y update",
-        "shell sudo apt -y install ca-certificates curl gnupg",
-        "shell sudo install -m 0755 -d /etc/apt/keyrings",
-        "shell curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo $ID)/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg",
-        "shell sudo chmod a+r /etc/apt/keyrings/docker.gpg",
-        "shell bash -lc \"echo \\\"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$(. /etc/os-release; echo $ID) $(. /etc/os-release; echo $VERSION_CODENAME) stable\\\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null\"",
-        "shell sudo apt -y update",
-        "shell sudo apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
-        "shell sudo usermod -aG docker ${SUDO_USER:-$USER} || true",
+    "podman_install": [
+        "packages install podman",
+        "shell sudo usermod -aG podman ${SUDO_USER:-$USER} || true",
+        "shell systemctl --user enable podman.socket || true",
+    ],
+    "docker_compat": [
+        "packages install podman-docker",
+        "shell sudo touch /etc/containers/nodocker",
     ],
     "nginx_install": [
         "packages install nginx",
