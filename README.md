@@ -71,8 +71,38 @@ ENV_MAP = {
 }
 ```
 
+## Project Structure
+
+This project uses a modular task organization:
+
+- `Pfyfile.pf` - Main configuration with includes for all task categories
+- `Pfyfile.dev.pf` - Development tasks (setup, lint, test, symlink)
+- `Pfyfile.tests.pf` - Testing tasks (basic, integration, docs)
+- `Pfyfile.builds.pf` - Build and release tasks (validate, package, install)
+- `Pfyfile.cleanup.pf` - Cleanup and maintenance tasks
+- `base.pf`, `web.pf`, `test.pf` - Core functionality examples
+- `scripts/` - Helper scripts (following no-long-commands rule)
+
+## Quick Start Commands
+
+```bash
+# Complete project setup
+./pf.py setup
+
+# Validate everything works
+./pf.py validate
+
+# Run basic functionality tests
+./pf.py test-basic
+
+# Clean up project
+./pf.py clean-all
+```
+
 ## Notes
 
 - Uses your SSH agent/keys and `~/.ssh/config` if present
 - `packages` assumes **apt**; easy to extend to `dnf`, `pacman`, etc.
 - Parallelism: min(32, number of hosts). Tweak in code.
+- Follows PODMAN > Docker rule - use `podman_install` instead of `docker_install`
+- Helper scripts in `scripts/` directory keep pf files clean and readable

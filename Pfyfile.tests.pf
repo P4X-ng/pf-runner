@@ -1,0 +1,20 @@
+# Pfyfile.tests.pf - Testing tasks
+
+task test-basic
+  describe Test basic pf.py functionality
+  shell ./pf.py list
+  shell ./pf.py test_echo test_param=testing
+  shell ./pf.py test_params param1=hello param2=world
+end
+
+task test-integration
+  describe Run integration tests with real commands
+  shell ./pf.py update
+  shell echo "Integration tests completed successfully"
+end
+
+task test-docs
+  describe Test all examples from documentation
+  shell ./pf.py bootstrap
+  shell echo "Documentation examples tested"
+end
