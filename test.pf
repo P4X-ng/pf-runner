@@ -1,10 +1,13 @@
-task test_echo
-  describe Test parameter and variable interpolation
-  env TEST_VAR=defaultvalue
-  shell echo "Hello from test task! param=$test_param env=$TEST_VAR"
+# simple test file
+env name="test-app"
+
+task hello
+  describe Say hello to the world
+  shell echo "Hello from ${name}!"
+  shell date
 end
 
-task test_params
-  describe Test parameter passing
-  shell echo "Received param1=${param1} and param2=${param2}"
+task vars name="default"
+  describe Test variable substitution  
+  shell echo "Task parameter: ${name}"
 end

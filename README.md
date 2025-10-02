@@ -1,5 +1,15 @@
 # pf — tiny Fabric runner (symbol-free DSL)
 
+INSTALL
+
+make setup # (creates ./pf symlink)
+make install-local # (creates symlink in ~/.local/bin
+
+That's it!
+
+
+## WHAT IS IT!?
+
 Single-file **Fabric** runner with a tiny, readable DSL, parallel SSH, and live output.
 
 - One file: `pf.py`
