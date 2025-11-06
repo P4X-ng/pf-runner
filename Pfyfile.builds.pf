@@ -23,7 +23,7 @@ task build-install
   shell echo "pf installed to /usr/local/bin/pf"
 end
 
-task build-uninstall  
+task build-uninstall
   describe Uninstall pf.py from system
   shell sudo rm -f /usr/local/bin/pf
   shell rm -f ~/.local/bin/pf

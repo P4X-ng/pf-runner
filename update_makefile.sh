@@ -1,3 +1,5 @@
+#!/bin/bash
+cat > Makefile << EOL
 SHELL := /bin/bash
 
 # Central Python from the user's venv (per workspace conventions)
@@ -26,12 +28,12 @@ setup: clean shebang perms symlink
 
 shebang:
 	@# Ensure the CLI uses the central venv python in the shebang
-	@if [ -f "$(PF_SCRIPT)" ]; then \
-	  first_line=$$(head -n 1 "$(PF_SCRIPT)"); \
-	  if [ "$$first_line" != "#!$(PF_PY)" ]; then \
-	    sed -i '1s|^.*$$|#!$(PF_PY)|' "$(PF_SCRIPT)"; \
-	    echo "Updated shebang to $(PF_PY)"; \
-	  fi; \
+	@if [ -f "$(PF_SCRIPT)" ]; then \\
+	  first_line=$$(head -n 1 "$(PF_SCRIPT)"); \\
+	  if [ "$$first_line" != "#!$(PF_PY)" ]; then \\
+	    sed -i '1s|^.*$$|#!$(PF_PY)|' "$(PF_SCRIPT)"; \\
+	    echo "Updated shebang to $(PF_PY)"; \\
+	  fi; \\
 	fi
 
 perms:
@@ -44,8 +46,8 @@ symlink:
 	@ls -l $(PF_LINK)
 
 test: setup
-	@set -e; \
-	./$(PF_LINK) test.pf --list; \
+	@set -e; \\
+	./$(PF_LINK) test.pf --list; \\
 	./$(PF_LINK) test.pf hello
 
 clean:
@@ -78,3 +80,4 @@ install: build
 	@echo "Installing executable to /usr/local/bin/pf..."
 	@sudo install dist/pf_parser /usr/local/bin/pf
 	@echo "Installation complete."
+EOL

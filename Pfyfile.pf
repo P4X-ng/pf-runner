@@ -1,32 +1,4 @@
-# Pfyfile.pf — main pf runner configuration with task includes
-
-# Core project tasks
-include "base.pf"
-include web.pf
-include "test.pf"
-
-# Task categories
-include "Pfyfile.dev.pf"
-include "Pfyfile.tests.pf"
-include "Pfyfile.builds.pf"
-include "Pfyfile.cleanup.pf"
-
-# Main user tasks
-task setup
-  describe Complete project setup for development
-  shell ./pf.py dev-setup
-  shell ./pf.py dev-symlink
-end
-
-task validate
-  describe Validate entire project functionality
-  shell ./pf.py build-validate
-  shell ./pf.py test-basic
-end
-
-task db
-  describe Install PostgreSQL and start service
-  packages install postgresql
-  service enable postgresql
-  service start postgresql
+task default-task
+  describe This is a task from the default Pfyfile.pf
+  shell echo "Hello from the default Pfyfile.pf"
 end
