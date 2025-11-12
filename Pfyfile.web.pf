@@ -9,6 +9,42 @@ task web-test
   shell npx playwright test --reporter=list
 end
 
+task web-test-headed
+  shell_lang bash
+  shell npx playwright test --headed --reporter=list
+end
+
+task web-test-headed-slow
+  shell_lang bash
+  # slowmo in ms; override with `pf web-test-headed-slow slowmo=300`
+  shell npx playwright test --headed --slow-mo ${slowmo:-250} --reporter=list
+end
+
+task web-test-ui
+  shell_lang bash
+  shell npx playwright test --ui
+end
+
+task web-test-chromium-headed-slow
+  shell_lang bash
+  shell npx playwright test --project=chromium --headed --slow-mo ${slowmo:-250} --reporter=list
+end
+
+task web-test-firefox-headed-slow
+  shell_lang bash
+  shell npx playwright test --project=firefox --headed --slow-mo ${slowmo:-250} --reporter=list
+end
+
+task web-test-webkit-headed-slow
+  shell_lang bash
+  shell npx playwright test --project=webkit --headed --slow-mo ${slowmo:-250} --reporter=list
+end
+
+task web-show-report
+  shell_lang bash
+  shell npx playwright show-report
+end
+
 task web-build-rust
   shell_lang bash
   shell cd demos/pf-web-polyglot-demo-plus-c/rust && wasm-pack build --target web --out-dir ../web/wasm/rust/pkg --out-name rust_demo
