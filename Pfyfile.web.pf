@@ -88,3 +88,8 @@ task cli-test
   shell_lang bash
   shell node --test tests/cli/*.mjs
 end
+
+task cli-test-semi
+  shell_lang bash
+  shell node --test tests/cli/semi-complex.spec.mjs
+end
