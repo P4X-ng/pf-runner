@@ -72,3 +72,19 @@ task web-build-all
   shell pf web-build-fortran
   shell pf web-build-wat
 end
+
+# CLI runner tasks
+task cli-run-wat
+  shell_lang bash
+  shell node tools/polyglot-cli/runner.mjs --lang=wat --action=run
+end
+
+task cli-dry
+  shell_lang bash
+  shell node tools/polyglot-cli/runner.mjs --lang=${lang:-wat} --action=${action:-run} --dry-run
+end
+
+task cli-test
+  shell_lang bash
+  shell node --test tests/cli
+end
