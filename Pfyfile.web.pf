@@ -86,5 +86,5 @@ end
 
 task cli-test
   shell_lang bash
-  shell node --test tests/cli
+  shell node --test tests/cli/*.mjs
 end
