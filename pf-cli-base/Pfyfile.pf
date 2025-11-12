@@ -1,0 +1,4 @@
+task default-task
+  describe This is a task from the default Pfyfile.pf
+  shell echo "Hello from the default Pfyfile.pf"
+end
