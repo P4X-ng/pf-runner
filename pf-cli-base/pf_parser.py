@@ -407,9 +407,14 @@ def main(argv: List[str]) -> int:
             tasks = argv[i+1:]; break
         tasks = argv[i:]; break
 
-    if not tasks or tasks[0] in {"help", "--help"}:
-        print("Usage: pf [<pfy_file>] [env=NAME]* [hosts=..|host=..]* [user=..] [port=..] [sudo=true] [sudo_user=..] <task|list> [more_tasks...]")
-        print("\\nAvailable tasks:"); _print_list(file_arg=pfy_file_arg); return 0
+    if not tasks or tasks[0] in {"help", "--help", "-h"}:
+        if len(tasks) > 1:
+            _print_task_help(tasks[1], file_arg=pfy_file_arg)
+        else:
+            print("Usage: pf [<pfy_file>] [env=NAME]* [hosts=..|host=..]* [user=..] [port=..] [sudo=true] [sudo_user=..] <task|list|help> [more_tasks...]")
+            print("\nAvailable tasks:")
+            _print_list(file_arg=pfy_file_arg)
+        return 0
     if tasks[0] == "list":
         _print_list(file_arg=pfy_file_arg); return 0
 

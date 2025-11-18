@@ -1,4 +1,4 @@
-('/home/punk/Projects/pf-original/pf-cli-base/build/pf_parser/PYZ-00.pyz',
+('/home/punk/Projects/pf-runner/pf-cli-base/build/pf_parser/PYZ-00.pyz',
  [('_compat_pickle', '/usr/lib/python3.12/_compat_pickle.py', 'PYMODULE'),
   ('_compression', '/usr/lib/python3.12/_compression.py', 'PYMODULE'),
   ('_py_abc', '/usr/lib/python3.12/_py_abc.py', 'PYMODULE'),
